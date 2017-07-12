@@ -38,12 +38,12 @@ def warpPerspectivePadded(src, dst, transf, flags=cv2.INTER_LINEAR, borderMode=c
     GitHub --- https://github.com/alkasm/padded-transformations
     """
 
-    if transf.shape == (2, 3):
-        print("Expected transf.shape==(3, 3) but transf.shape==(2, 3)\n"+
-            "...returning result from warpAffinePadded().")
-        return warpAffinePadded(src, dst, transf, flags=flags, borderMode=borderMode, borderValue=borderValue)
+    assert transf.shape == (3, 3), 'Perspective transformation shape should be (3, 3).\nUse warpAffinePadded() for (2, 3) Euclidean or affine transformations.'
 
     transf = transf/transf[2,2] # ensure a legal homography
+    if flags in (cv2.WARP_INVERSE_MAP, cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP, cv2.INTER_NEAREST+cv2.WARP_INVERSE_MAP):
+        transf = cv2.invert(transf)[1]
+        flags -= cv2.WARP_INVERSE_MAP
 
     # it is enough to find where the corners of the image go to find the padding bounds
     # points in clockwise order from origin
@@ -117,18 +117,19 @@ def warpAffinePadded(src, dst, transf, flags=cv2.INTER_LINEAR, borderMode=cv2.BO
     GitHub --- https://github.com/alkasm/padded-transformations
     """
 
-    if transf.shape == (3, 3):
-        print("Expected transf.shape==(2, 3) but transf.shape==(3, 3)\n"+
-            "...returning result from warpPerspectivePadded().")
-        return warpPerspectivePadded(src, dst, transf, flags=flags, borderMode=borderMode, borderValue=borderValue)
+    assert transf.shape == (2, 3), 'Affine transformation shape should be (2, 3).\nUse warpPerspectivePadded() for (3, 3) homography transformations.'
+
+    if flags in (cv2.WARP_INVERSE_MAP, cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP, cv2.INTER_NEAREST+cv2.WARP_INVERSE_MAP):
+        transf = cv2.invertAffineTransform(transf)
+        flags -= cv2.WARP_INVERSE_MAP
 
     # it is enough to find where the corners of the image go to find the padding bounds
     # points in clockwise order from origin
     src_h, src_w = src.shape[:2]
-    lin_homg_pts = np.array([[0, src_w, src_w, 0], [0, 0, src_h, src_h], [1, 1, 1, 1]])
+    lin_pts = np.array([[0, src_w, src_w, 0], [0, 0, src_h, src_h]])
 
     # transform points
-    transf_lin_pts = transf.dot(lin_pts) + transf[:,2].reshape(2,1)
+    transf_lin_pts = transf[:,:2].dot(lin_pts) + transf[:,2].reshape(2,1)
 
     # find min and max points
     min_x = np.floor(np.min(transf_lin_pts[0])).astype(int)
