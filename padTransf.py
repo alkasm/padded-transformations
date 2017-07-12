@@ -10,32 +10,29 @@ __email__ = "ar@reynoldsalexander.com"
 
 
 def warpPerspectivePadded(src, dst, transf, flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0):
-    """warpPerspectivePadded(...)
-    warpPerspectivePadded(src, dst, transf, dsize[, flags[, borderMode[, borderValue]]]) -> src_warped, dst_padded
+    """warpPerspectivePadded(src, dst, transf[, flags[, borderMode[, borderValue]]]) -> src_warped, dst_padded
 
-    This function takes in a source image to be warped onto the destination image.
-    The only difference from the provided OpenCV functions is that this function 
-    calculates the extent of the warped image and pads both the destination and
-    the warped image so that the full extent of both images can be displayed together.
+    Takes in a source image to be warped onto the destination image.
+    The only difference from the provided OpenCV function is this  
+    calculates the extent of the warped image and pads both the 
+    destination and the warped image so that the full extent of both 
+    images can be displayed together.
 
     Required arguments:
-    src --- source image (to be warped)
-    dst --- destination image (to be padded)
-    transf --- (3, 3) transformation matrix
+        src --- source image (to be warped)
+        dst --- destination image (to be padded)
+        transf --- (3, 3) transformation matrix
 
     Optional keyword arguments:
-    flags, borderMode, borderValue --- the optional arguments to cv2.warpPerspective(). See OpenCV docs for usage.
-    By default, flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0.
+        flags, borderMode, borderValue
+        See OpenCV docs on warpPerspective() for usage and defaults.
 
     Outputs:
-    src_warped --- warped source image (uncropped)
-    dst_padded --- padded destination image (same h, w as src_warped with dst placed to match src_warped)
+        src_warped --- warped source image (uncropped)
+        dst_padded --- padded destination image (same h, w as src_warped)
 
     See also:
-    warpAffinePadded() --- provides the same functionality but for affine transformations
-
-    Contribute:
-    GitHub --- https://github.com/alkasm/padded-transformations
+        warpAffinePadded() --- for (2, 3) affine transformations
     """
 
     assert transf.shape == (3, 3), 'Perspective transformation shape should be (3, 3).\nUse warpAffinePadded() for (2, 3) Euclidean or affine transformations.'
@@ -90,31 +87,29 @@ def warpPerspectivePadded(src, dst, transf, flags=cv2.INTER_LINEAR, borderMode=c
 
 def warpAffinePadded(src, dst, transf, flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0):
     """warpPerspectivePadded(...)
-    warpPerspectivePadded(src, dst, transf, dsize[, flags[, borderMode[, borderValue]]]) -> src_warped, dst_padded
+    warpPerspectivePadded(src, dst, transf[, flags[, borderMode[, borderValue]]]) -> src_warped, dst_padded
 
-    This function takes in a source image to be warped onto the destination image.
-    The only difference from the provided OpenCV functions is that this function 
-    calculates the extent of the warped image and pads both the destination and
-    the warped image so that the full extent of both images can be displayed together.
+    Takes in a source image to be warped onto the destination image.
+    The only difference from the provided OpenCV function is this  
+    calculates the extent of the warped image and pads both the 
+    destination and the warped image so that the full extent of both 
+    images can be displayed together.
 
     Required arguments:
-    src --- source image (to be warped)
-    dst --- destination image (to be padded)
-    transf --- (2, 3) transformation matrix
+        src --- source image (to be warped)
+        dst --- destination image (to be padded)
+        transf --- (2, 3) transformation matrix
 
     Optional keyword arguments:
-    flags, borderMode, borderValue --- the optional arguments to cv2.warpAffine(). See OpenCV docs for usage.
-    By default, flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0.
+        flags, borderMode, borderValue
+        See OpenCV docs on warpAffine() for usage and defaults.
 
     Outputs:
-    src_warped --- warped source image (uncropped)
-    dst_padded --- padded destination image (same h, w as src_warped with dst placed to match src_warped)
+        src_warped --- warped source image (uncropped)
+        dst_padded --- padded destination image (same h, w as src_warped)
 
     See also:
-    warpPerspectivePadded() --- provides the same functionality but for perspective transformations
-
-    Contribute:
-    GitHub --- https://github.com/alkasm/padded-transformations
+        warpPerspectivePadded() --- for (3, 3) perspective transformations
     """
 
     assert transf.shape == (2, 3), 'Affine transformation shape should be (2, 3).\nUse warpPerspectivePadded() for (3, 3) homography transformations.'
