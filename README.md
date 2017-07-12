@@ -1,6 +1,8 @@
 ## padded-transformations
 Providing a padded version of OpenCV's `warpAffine()` and `warpPerspective()` functions.
 
+![Example image](example.png "Example output")
+
 ## usage
     from padTransf import *
     src_warped, dst_padded = warpPerspectivePadded(src, dst, homography)
@@ -10,6 +12,7 @@ Providing a padded version of OpenCV's `warpAffine()` and `warpPerspective()` fu
     test/         contains test images and ground truth homographies; from Oxford's VGG
     .gitignore    self-explanatory
     README.md     this file
+    example.png   an example image showing the padding extent
     example.py    an example script to show usage and compare with standard OpenCV functions
     padTransf.py  the python module containing the two padded warping functions
     
