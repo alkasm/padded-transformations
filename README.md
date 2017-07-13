@@ -11,6 +11,7 @@ Providing a padded version of OpenCV's `warpAffine()` and `warpPerspective()` fu
 ## files
     test/         contains test images and ground truth homographies; from Oxford's VGG
     .gitignore    self-explanatory
+    LICENSE       MIT License statement
     README.md     this file
     example.png   an example image showing the padding extent
     example.py    an example script to show usage and compare with standard OpenCV functions
