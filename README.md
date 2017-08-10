@@ -4,9 +4,9 @@ Providing a padded version of OpenCV's `warpAffine()` and `warpPerspective()` fu
 ![Example image](example.png "Example output")
 
 ## usage
-    from padTransf import *
-    src_warped, dst_padded = warpPerspectivePadded(src, dst, homography)
-    src_warped, dst_padded = warpAffinePadded(src, dst, affine_transf)
+    import padtransf
+    src_warped, dst_padded = padtransf.warpPerspectivePadded(src, dst, homography)
+    src_warped, dst_padded = padtransf.warpAffinePadded(src, dst, affine_transf)
     
 ## files
     test/         contains test images and ground truth homographies; from Oxford's VGG
