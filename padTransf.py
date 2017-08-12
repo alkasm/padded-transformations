@@ -4,7 +4,14 @@ This module provides two functions, warpPerspectivePadded() and
 warpAffinePadded(), which compliment the built-in OpenCV functions
 warpPerspective() and warpAffine(). These functions calculate the
 extent of the warped image and pads both the destination and the
-warped image so the extent of both images can be displayed together.
+warped image so both images can be fully displayed together.
+
+References
+----------
+See the following question and my answer on Stack Overflow for an
+idea of how this was conceptualized and to read the mathematics
+behind the functions: https://stackoverflow.com/a/44459869/5087436
+
 """
 
 
@@ -13,42 +20,55 @@ import numpy as np
 
 
 def warpPerspectivePadded(
-        src, dst, transf,
+        src, dst, M,
         flags=cv2.INTER_LINEAR,
         borderMode=cv2.BORDER_CONSTANT,
         borderValue=0):
     """Performs a perspective warp with padding.
 
-    Required args:
-    --------------
-    src --- source image, to be warped (numpy.ndarray)
-    dst --- destination image, to be padded (numpy.ndarray)
-    transf --- (3, 3) transformation matrix (numpy.ndarray)
+    Parameters
+    ----------
+    src : array_like
+        source image, to be warped.
+    dst : array_like
+        destination image, to be padded.
+    M : array_like
+        `3x3` perspective transformation matrix.
 
-    Optional kwargs:
-    ----------------
-    flags, borderMode, borderValue --- See OpenCV docs on
-        warpPerspective() for usage and defaults.
+    Returns
+    -------
+    src_warped : ndarray
+        padded and warped source image
+    dst_padded : ndarray
+        padded destination image, same size as src_warped
 
-    Returns:
+    Optional Parameters
+    -------------------
+    flags : int, optional
+        combination of interpolation methods (`cv2.INTER_LINEAR` or
+        `cv2.INTER_NEAREST`) and the optional flag `cv2.WARP_INVERSE_MAP`,
+        that sets `M` as the inverse transformation (`dst` --> `src`).
+    borderMode : int, optional
+        pixel extrapolation method (`cv2.BORDER_CONSTANT` or
+        `cv2.BORDER_REPLICATE`).
+    borderValue : numeric, optional
+        value used in case of a constant border; by default, it equals 0.
+
+    See Also
     --------
-    src_warped --- padded and warped source image (numpy.ndarray)
-    dst_padded --- padded destination image (numpy.ndarray)
-
-    See also:
-    ---------
-    warpAffinePadded() --- for (2, 3) affine transformations
+    warpAffinePadded() : for `2x3` affine transformations
+    cv2.warpPerspective(), cv2.warpAffine() : original OpenCV functions
     """
 
-    assert transf.shape == (3, 3), \
+    assert M.shape == (3, 3), \
         'Perspective transformation shape should be (3, 3).\n' \
         + 'Use warpAffinePadded() for (2, 3) affine transformations.'
 
-    transf = transf / transf[2, 2]  # ensure a legal homography
+    M = M / M[2, 2]  # ensure a legal homography
     if flags in (cv2.WARP_INVERSE_MAP,
                  cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP,
                  cv2.INTER_NEAREST + cv2.WARP_INVERSE_MAP):
-        transf = cv2.invert(transf)[1]
+        M = cv2.invert(M)[1]
         flags -= cv2.WARP_INVERSE_MAP
 
     # it is enough to find where the corners of the image go to find
@@ -60,7 +80,7 @@ def warpPerspectivePadded(
         [1, 1, 1, 1]])
 
     # transform points
-    transf_lin_homg_pts = transf.dot(lin_homg_pts)
+    transf_lin_homg_pts = M.dot(lin_homg_pts)
     transf_lin_homg_pts /= transf_lin_homg_pts[2, :]
 
     # find min and max points
@@ -78,7 +98,7 @@ def warpPerspectivePadded(
     if min_y < 0:
         anchor_y = -min_y
         transl_transf[1, 2] += anchor_y
-    shifted_transf = transl_transf.dot(transf)
+    shifted_transf = transl_transf.dot(M)
     shifted_transf /= shifted_transf[2, 2]
 
     # create padded destination image
@@ -102,40 +122,53 @@ def warpPerspectivePadded(
 
 
 def warpAffinePadded(
-        src, dst, transf,
+        src, dst, M,
         flags=cv2.INTER_LINEAR,
         borderMode=cv2.BORDER_CONSTANT,
         borderValue=0):
     """Performs an affine or Euclidean/rigid warp with padding.
 
-    Required args:
-    --------------
-    src --- source image, to be warped (numpy.ndarray)
-    dst --- destination image, to be padded (numpy.ndarray)
-    transf --- (2, 3) transformation matrix (numpy.ndarray)
+    Parameters
+    ----------
+    src : array_like
+        source image, to be warped.
+    dst : array_like
+        destination image, to be padded.
+    M : array_like
+        `2x3` affine transformation matrix.
 
-    Optional kwargs:
-    ----------------
-    flags, borderMode, borderValue --- See OpenCV docs on
-        warpAffine() for usage and defaults.
+    Returns
+    -------
+    src_warped : ndarray
+        padded and warped source image
+    dst_padded : ndarray
+        padded destination image, same size as src_warped
 
-    Returns:
+    Optional Parameters
+    -------------------
+    flags : int, optional
+        combination of interpolation methods (`cv2.INTER_LINEAR` or
+        `cv2.INTER_NEAREST`) and the optional flag `cv2.WARP_INVERSE_MAP`,
+        that sets `M` as the inverse transformation (`dst` --> `src`).
+    borderMode : int, optional
+        pixel extrapolation method (`cv2.BORDER_CONSTANT` or
+        `cv2.BORDER_REPLICATE`).
+    borderValue : numeric, optional
+        value used in case of a constant border; by default, it equals 0.
+
+    See Also
     --------
-    src_warped --- padded and warped source image (numpy.ndarray)
-    dst_padded --- padded destination image (numpy.ndarray)
-
-    See also:
-    ---------
-    warpPerspectivePadded() --- for (3, 3) perspective transformations
+    warpPerspectivePadded() : for `3x3` perspective transformations
+    cv2.warpPerspective(), cv2.warpAffine() : original OpenCV functions
     """
-    assert transf.shape == (2, 3), \
+    assert M.shape == (2, 3), \
         'Affine transformation shape should be (2, 3).\n' \
         + 'Use warpPerspectivePadded() for (3, 3) homography transformations.'
 
     if flags in (cv2.WARP_INVERSE_MAP,
                  cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP,
                  cv2.INTER_NEAREST + cv2.WARP_INVERSE_MAP):
-        transf = cv2.invertAffineTransform(transf)
+        M = cv2.invertAffineTransform(M)
         flags -= cv2.WARP_INVERSE_MAP
 
     # it is enough to find where the corners of the image go to find
@@ -146,7 +179,7 @@ def warpAffinePadded(
         [0, 0, src_h, src_h]])
 
     # transform points
-    transf_lin_pts = transf[:, :2].dot(lin_pts) + transf[:, 2].reshape(2, 1)
+    transf_lin_pts = M[:, :2].dot(lin_pts) + M[:, 2].reshape(2, 1)
 
     # find min and max points
     min_x = np.floor(np.min(transf_lin_pts[0])).astype(int)
@@ -160,7 +193,7 @@ def warpAffinePadded(
         anchor_x = -min_x
     if min_y < 0:
         anchor_y = -min_y
-    shifted_transf = transf + [[0, 0, anchor_x], [0, 0, anchor_y]]
+    shifted_transf = M + [[0, 0, anchor_x], [0, 0, anchor_y]]
 
     # create padded destination image
     dst_shape = dst.shape
