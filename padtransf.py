@@ -102,17 +102,14 @@ def warpPerspectivePadded(
     shifted_transf /= shifted_transf[2, 2]
 
     # create padded destination image
-    dst_shape = dst.shape
-    dst_h, dst_w = dst_shape[:2]
-    if len(dst_shape) == 3:  # 3-ch image, don't pad the third dimension
-        pad_widths = ((anchor_y, max(max_y, dst_h) - dst_h),
-                      (anchor_x, max(max_x, dst_w) - dst_w),
-                      (0, 0))
-    else:
-        pad_widths = ((anchor_y, max(max_y, dst_h) - dst_h),
-                      (anchor_x, max(max_x, dst_w) - dst_w))
-    dst_padded = np.pad(dst, pad_widths, mode='constant', constant_values=0)
+    dst_h, dst_w = dst.shape[:2]
 
+    pad_widths = [anchor_y, max(max_y, dst_h) - dst_h,
+                  anchor_x, max(max_x, dst_w) - dst_w]
+
+    dst_padded = cv2.copyMakeBorder(dst, *pad_widths,
+                                    borderType=borderMode, value=borderValue)
+    
     dst_pad_h, dst_pad_w = dst_padded.shape[:2]
     src_warped = cv2.warpPerspective(
         src, shifted_transf, (dst_pad_w, dst_pad_h),
@@ -196,16 +193,13 @@ def warpAffinePadded(
     shifted_transf = M + [[0, 0, anchor_x], [0, 0, anchor_y]]
 
     # create padded destination image
-    dst_shape = dst.shape
-    dst_h, dst_w = dst_shape[:2]
-    if len(dst_shape) == 3:  # 3-ch image, don't pad the third dimension
-        pad_widths = ((anchor_y, max(max_y, dst_h) - dst_h),
-                      (anchor_x, max(max_x, dst_w) - dst_w),
-                      (0, 0))
-    else:
-        pad_widths = ((anchor_y, max(max_y, dst_h) - dst_h),
-                      (anchor_x, max(max_x, dst_w) - dst_w))
-    dst_padded = np.pad(dst, pad_widths, mode='constant', constant_values=0)
+    dst_h, dst_w = dst.shape[:2]
+
+    pad_widths = [anchor_y, max(max_y, dst_h) - dst_h,
+                  anchor_x, max(max_x, dst_w) - dst_w]
+
+    dst_padded = cv2.copyMakeBorder(dst, *pad_widths,
+                                    borderType=borderMode, value=borderValue)
 
     dst_pad_h, dst_pad_w = dst_padded.shape[:2]
     src_warped = cv2.warpAffine(
