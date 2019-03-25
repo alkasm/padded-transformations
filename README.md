@@ -1,3 +1,9 @@
+# Deprecated
+
+Deprecated and coalesced into https://github.com/alkasm/cvtools
+
+---
+
 ## padded-transformations
 Providing a padded version of OpenCV's `warpAffine()` and `warpPerspective()` functions.
 
