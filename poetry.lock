@@ -1,16 +1,5 @@
 [[package]]
 category = "main"
-description = "Utilities for computer vision in Python"
-name = "cvtools-alkasm"
-optional = false
-python-versions = ">=3.6,<4.0"
-version = "0.8.1"
-
-[package.dependencies]
-opencv-python = "!=4.2.0.32"
-
-[[package]]
-category = "main"
 description = "Wrapper package for OpenCV python bindings."
 name = "opencv-python"
 optional = false
@@ -18,14 +7,10 @@ python-versions = ">=3.6"
 version = "4.4.0.46"
 
 [metadata]
-content-hash = "2c19cf1944862bb1a34f25f1123a8e902e1068b12d9ea80e3be075f8cd41d641"
+content-hash = "ab9136f6b7277a2795ba5782af3cad96c1cdd17cdd697727d53bcaa69a9aebd9"
 python-versions = "^3.6"
 
 [metadata.files]
-cvtools-alkasm = [
-    {file = "cvtools-alkasm-0.8.1.tar.gz", hash = "sha256:d95700f030930a40b5c275a8c284750977dafee3834116beb4582f922c395854"},
-    {file = "cvtools_alkasm-0.8.1-py3-none-any.whl", hash = "sha256:ed9ea001b51576cbe4b8b78e21655dae0dd83d5639f47c19a0b418fd9c4bfc4b"},
-]
 opencv-python = [
     {file = "opencv-python-4.4.0.46.tar.gz", hash = "sha256:d80db278a07f51811dbf0f9c31ff7cd5b2501822fb7a7587e71f9ff27d5c04bd"},
     {file = "opencv_python-4.4.0.46-cp36-cp36m-macosx_10_13_x86_64.whl", hash = "sha256:14df77490c8aedceae74e660564d48c04761658aecc93895ac5e974006a89606"},
